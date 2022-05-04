@@ -13,7 +13,7 @@ namespace AntSimulator
 
         public int Life { get => life; set => life = value; }
         protected int life = 100;
-        protected int foodWorth = 5;
+        protected int foodWorth = 10;
 
         public char Symbol { get; protected set; } = 'A';
 
