@@ -4,7 +4,7 @@ namespace AntSimulator
     {
         static void Main(string[] args)
         {
-            Engine e = new Engine(1000, 100);
+            Engine e = new Engine(1000, 25);
             e.RunSimulation();
         }
     }

@@ -9,8 +9,8 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
         private List<Tile> foods = new List<Tile>();
         private List<Ant> ants = new List<Ant>();
 
-        public int tickCount;
-        public int delay;
+        private int tickCount;
+        private int delay;
 
         public int foodCount = 10;
 
@@ -24,39 +24,34 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
         {
             Random randy = new Random();
 
-            //random x and y values within the border, will be one less than the sides of the screen
-            int randomX = randy.Next(1, grid.Width-1);
-            int randomY = randy.Next(1, grid.Height-1);
+            int terrainSelection = randy.Next(0, 10);
 
-            Tile food = grid.grid[randomY, randomX];
-            food.foodCount = foodCount;
-            foods.Add(food);
-            return food;
-        }
-
-        void GenerateAnt()
-        {
-            Random randy = new Random();
-            int randomAntSelector = randy.Next(0, 3);
-
-            //simple ant
-            if (randomAntSelector == 0)
+            //30% chance to spawn food in the air
+            if (terrainSelection <= 2)
             {
+                int randomX = randy.Next(1, grid.Width-1);
+                int randomY = randy.Next(grid.Height/2 + 1, grid.Height-1);
 
-                ants.Add(new TrailAnt(10, 5, grid, foods, ants));
+                Tile food = grid.grid[randomY, randomX];
+                food.foodCount = foodCount;
+                foods.Add(food);
+                return food;
             }
-            //dig ant
-            else if (randomAntSelector == 1)
-            {
-                ants.Add(new DiggingAnt(10, 5, grid, foods, ants));
-
-            }
-            //fly ant
+            //Remainder percentage should be on dirt
             else
             {
-                ants.Add(new FlyingAnt(10, 5, grid, foods, ants));
+                int randomX = randy.Next(1, grid.Width-1);
+                int randomY = randy.Next(1, grid.Height-1);
+
+                Tile food = grid.grid[randomY, randomX];
+                food.foodCount = foodCount;
+                foods.Add(food);
+                return food;
             }
+
+            //random x and y values within the border, will be one less than the sides of the screen
         }
+
 
         public void RunSimulation()
         {
@@ -66,10 +61,12 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
             TrailAnt timmy = new TrailAnt(10, grid.Height/2, grid, foods, ants);
             FlyingAnt flik = new FlyingAnt(2, grid.Height/2, grid, foods, ants);
             DiggingAnt doug = new DiggingAnt(35, grid.Height/2, grid, foods, ants);
+            QueenAnt qua = new QueenAnt(grid.Width-2, grid.Height-2, grid, foods, ants);
 
             ants.Add(timmy);
             ants.Add(flik);
             ants.Add(doug);
+            ants.Add(qua);
 
             grid.DrawGrid();
             Thread.Sleep(2000);
@@ -78,9 +75,11 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
             {
                 HashSet<Tile> tiles = new HashSet<Tile>();
 
-                if (tickCount % 25 == 0)
+                if (tickCount % 50 == 0)
                 {
-                    for (int i = 0; i < randy.Next(2, 5); i++)
+                    //why round down when I can just type cast to int haha
+                    //for (int i = 0; i < (int)(ants.Count * 1.5); i++)
+                    for (int i = 0; i < 5; i++)
                     {
                         tiles.Add(GenerateFood());
                     }
