@@ -27,7 +27,7 @@ namespace AntSimulator
             {
                 for (int x = 0; x < width; x++)
                 {
-                    Tile tile = new Tile();
+                    Tile tile = new Tile(x, y);
 
                     // if y == 10, It will not be air or dir.
                     if (y < height/2)

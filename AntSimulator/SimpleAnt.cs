@@ -1,10 +1,10 @@
 namespace AntSimulator
 {
-    sealed class SimpleAnt : AbstractAnt
+    sealed class SimpleAnt : Ant
     {
         public const char symbol = 'A';
 
-        public override void Act(Tile tile, int[] xArr, int[] yArr)
+        public override void Act()
         {
             int[] currentCoordinate = { 0, 0 };
             //default to first given food tile 

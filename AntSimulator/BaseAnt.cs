@@ -1,9 +1,22 @@
 namespace AntSimulator
 {
-    abstract class AbstractAnt
+    class Ant
     {
-        public abstract void Act(Tile tile, int x, int y);
-    }
+        Grid grid;
+        List<Tile> foods;
+        List<Tile> ants;
 
+        public Ant(Grid grid, List<Tile> foods, List<Tile> ants)
+        {
+            this.grid = grid;
+            this.foods = foods;
+            this.ants = ants;
+        }
+
+        public virtual void Act()
+        {
+
+        }
+    }
 }
 
