@@ -39,6 +39,8 @@
             if (x_diff == 0 && y_diff == 0)
             {
                 EatFood();
+                pheromoneTrail = new bool[grid.Height, grid.Width];
+                backTrack.Clear();
                 return;
             }
             else if (!up.isWall && !up.isDirt && !up.isAir && !pheromoneTrail[y - 1, x])

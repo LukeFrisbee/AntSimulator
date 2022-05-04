@@ -29,14 +29,13 @@ namespace AntSimulator
                 {
                     Tile tile = new Tile(x, y);
 
-                    // if y == 10, It will not be air or dir.
-                    if (y < height/2)
+                    // if y height/2, It will not be air or dirt.
+                    if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
+                        tile.isWall = true;
+                    else if (y < height/2)
                         tile.isAir = true;
                     else if (y > height/2)
                         tile.isDirt = true;
-
-                    if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
-                        tile.isWall = true;
                     
                     grid[y, x] = tile;
                 }
@@ -58,21 +57,33 @@ namespace AntSimulator
                 //Console.Write('│');
                 for (int x = 0; x < width; x++)
                 {
-                    Console.BackgroundColor = ConsoleColor.Black;
                     Tile tile = grid[y, x];
                     Char drawChar = ' ';
+
+                    Console.ForegroundColor = ConsoleColor.Black;
 
                     if (tile.isWall)
                         Console.BackgroundColor = ConsoleColor.Gray;
                     else if (tile.isDirt)
                         Console.BackgroundColor = ConsoleColor.DarkYellow;
+                    else if (tile.isAir)
+                        Console.BackgroundColor = ConsoleColor.Blue;
+                    else
+                        Console.BackgroundColor = ConsoleColor.Yellow;
 
                     if (tile.ants.Count > 0)
+                    {
                         drawChar = tile.ants[0].Symbol;
+                    }
                     else if (tile.foodCount > 0 && tile.foodCount < 10)
-                        drawChar = tile.foodCount.ToString()[0];
+                    {
+                        drawChar = '@';
+                        Console.ForegroundColor = ConsoleColor.Red;
+                    }
 
                     Console.Write(drawChar);
+
+                    Console.ForegroundColor = ConsoleColor.Gray;
                     Console.BackgroundColor = ConsoleColor.Black;
                 }
                 Console.WriteLine();

@@ -8,8 +8,8 @@
 
         public override void Act()
         {
-            base.Act();
             grid.grid[y, x].isDirt = false;
+            base.Act();
         }
 
 

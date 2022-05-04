@@ -21,14 +21,16 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
         void GenerateFood()
         {
             Random randy = new Random();
-            //random x and y values within the border, will be one less than the sides of the screen
-            int randomX = randy.Next(1, grid.Height - 1);
-            int randomY = randy.Next(1, grid.Width - 1);
-            int randomFoodCount = randy.Next(0, 10);
-            grid.grid[randomX, randomY].foodCount = randomFoodCount;
-            foods.Add(grid.grid[randomX, randomY]);
 
+            //random x and y values within the border, will be one less than the sides of the screen
+            int randomX = randy.Next(1, grid.Width);
+            int randomY = randy.Next(1, grid.Height);
+            int randomFoodCount = randy.Next(0, 10);
+
+            grid.grid[randomY, randomX].foodCount = randomFoodCount;
+            foods.Add(grid.grid[randomY, randomX]);
         }
+
         void GenerateAnt()
         {
             Random randy = new Random();
@@ -62,30 +64,35 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
             FlyingAnt flik = new FlyingAnt(10, 5, grid, foods, ants);
             DiggingAnt doug = new DiggingAnt(35, 10, grid, foods, ants);
 
+            ants.Add(timmy);
+            ants.Add(flik);
+            ants.Add(doug);
+
+            Thread.Sleep(2000);
+
             for (int i = 0; i < randy.Next(2, 5); i++)
             {
                 int randX = randy.Next(1, grid.Width-2); 
-                int randY = randy.Next(grid.Height/2, grid.Height+1); 
-                grid.grid[randY,randX].foodCount = randy.Next(0,10);
-                foods.Add(grid.grid[randY, randX]);
+                int randY = randy.Next(grid.Height/2, grid.Height); 
+                //grid.grid[randY,randX].foodCount = randy.Next(0,0);
+                //foods.Add(grid.grid[randY, randX]);
             }
-            Thread.Sleep(2000);
+
             grid.Draw();
             Thread.Sleep(2000);
-
-
 
             while (tickCount > 0)
             {
                 grid.Draw();
-                if (tickCount % 25 == 0){
 
-
+                if (tickCount % 25 == 0)
+                {
                     for (int i = 0; i < randy.Next(2, 5); i++)
                     {
                         GenerateFood();
                     }
                 }
+
                 for (int i = 0; i < ants.Count; i++)
                     ants[i].Act();
 
@@ -94,6 +101,8 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
                 tickCount--;
             }
         }
+
+
         static void foo(string[] args)
         {
             Grid grid = new Grid();

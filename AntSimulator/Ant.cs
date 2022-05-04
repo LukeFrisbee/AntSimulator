@@ -33,6 +33,9 @@ namespace AntSimulator
             if (target == null)
                 PickTarget();
 
+            //if (!grid.grid[y, x].isDirt && !grid.grid[y, x].isAir)
+                //grid.grid[y - 1, x].isAir = true;
+
             MoveToTarget();
 
             life--;
@@ -61,11 +64,12 @@ namespace AntSimulator
             Tile left = grid.grid[y, x - 1];
             Tile right = grid.grid[y, x + 1];
 
-            if (x_diff == 0 && y_diff == 0) EatFood();
-            else if (y_diff > 0 && !up.isWall) Move(Direction.Up);
+            //if (x_diff == 0 && y_diff == 0) EatFood();
+            if (y_diff > 0 && !up.isWall) Move(Direction.Up);
             else if (y_diff < 0 && !down.isWall) Move(Direction.Down);
             else if (x_diff > 0 && !left.isWall) Move(Direction.Left);
             else if (x_diff < 0 && !right.isWall) Move(Direction.Right);
+            else EatFood();
         }
 
         protected void EatFood()
@@ -114,7 +118,7 @@ namespace AntSimulator
         {
             foreach (Tile food in foods)
             {
-                if(!food.isAir && !food.isDirt)
+                if (!food.isAir && !food.isDirt)
                 {
                     target = food;
                     foods.Remove(food);
