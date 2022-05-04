@@ -58,10 +58,10 @@ namespace AntSimulator
                     Tile tile = grid[y, x];
                     Char drawChar = ' ';
 
-                    if (tile.hasAnt)
-                        drawChar = 'A';
+                    if (tile.ants.Count > 0)
+                        drawChar = tile.ants[0].Symbol;
                     else if (tile.foodCount > 0 && tile.foodCount < 10)
-                        drawChar = (char)tile.foodCount;
+                        drawChar = tile.foodCount.ToString()[0];
                     else if (tile.isDirt)
                         drawChar = '█';
 

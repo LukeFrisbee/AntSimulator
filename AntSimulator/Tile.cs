@@ -19,8 +19,7 @@ namespace AntSimulator
 
         public bool isDirt;
         public bool isAir;
-        public bool hasAnt;
-        public bool isTargeted;
+        public List<Ant> ants = new List<Ant>();
         public int foodCount = 0;
     }
 }
