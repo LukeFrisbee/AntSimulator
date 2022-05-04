@@ -2,15 +2,25 @@
 {
     public class FlyingAnt : Ant
     {
-        public override char Symbol { get; } = 'F';
+        public FlyingAnt(int x, int y, Grid grid, List<Tile> foods, List<Ant> ants) : base(x, y, grid, foods, ants) 
+        {
+            Symbol = 'F';
+        }
 
-        public FlyingAnt(int x, int y, Grid grid, List<Tile> foods, List<Ant> ants) : base(x, y, grid, foods, ants) { }
+        public override HashSet<Tile> Act()
+        {
+            base.Act();
+            if (life <= 0) return updatedTiles;
+
+            MoveToTarget();
+            return updatedTiles;
+        }
 
         protected override void PickTarget()
         {
             foreach (Tile food in foods)
             {
-                if (food.isAir && !food.isDirt)
+                if (food.State == TileState.Air)
                 {
                     target = food;
                     foods.Remove(food);

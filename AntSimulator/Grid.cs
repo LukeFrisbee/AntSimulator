@@ -31,66 +31,71 @@ namespace AntSimulator
 
                     // if y height/2, It will not be air or dirt.
                     if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
-                        tile.isWall = true;
+                        tile.State = TileState.Wall;
                     else if (y < height/2)
-                        tile.isAir = true;
+                        tile.State = TileState.Air;
                     else if (y > height/2)
-                        tile.isDirt = true;
+                        tile.State = TileState.Dirt;
                     
                     grid[y, x] = tile;
                 }
             }
         }
 
-        public void Draw()
+        public void DrawTiles(HashSet<Tile> tiles)
+        {
+            foreach (Tile tile in tiles)
+            {
+                Console.SetCursorPosition(tile.x, tile.y);
+                DrawTile(tile);
+            }
+        }
+
+        public void DrawGrid()
         {
             Console.CursorVisible = false;
             Console.SetCursorPosition(0, 0);
 
-            //string horizontalBar = new('─', width);
-            //string top = '┌' + horizontalBar + '┐';
-
-            //Console.WriteLine(top);
-
             for (int y = 0; y < height; y++)
             {
-                //Console.Write('│');
                 for (int x = 0; x < width; x++)
                 {
                     Tile tile = grid[y, x];
-                    Char drawChar = ' ';
-
-                    Console.ForegroundColor = ConsoleColor.Black;
-
-                    if (tile.isWall)
-                        Console.BackgroundColor = ConsoleColor.Gray;
-                    else if (tile.isDirt)
-                        Console.BackgroundColor = ConsoleColor.DarkYellow;
-                    else if (tile.isAir)
-                        Console.BackgroundColor = ConsoleColor.Blue;
-                    else
-                        Console.BackgroundColor = ConsoleColor.Yellow;
-
-                    if (tile.ants.Count > 0)
-                    {
-                        drawChar = tile.ants[0].Symbol;
-                    }
-                    else if (tile.foodCount > 0 && tile.foodCount < 10)
-                    {
-                        drawChar = '@';
-                        Console.ForegroundColor = ConsoleColor.Red;
-                    }
-
-                    Console.Write(drawChar);
-
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                    Console.BackgroundColor = ConsoleColor.Black;
+                    DrawTile(tile);
                 }
                 Console.WriteLine();
-                //Console.WriteLine('│');
+            }
+        }
+
+        private static void DrawTile(Tile tile)
+        {
+            Char drawChar = ' ';
+            Console.ForegroundColor = ConsoleColor.Black;
+
+            if (tile.State == TileState.Wall)
+                Console.BackgroundColor = ConsoleColor.Gray;
+            else if (tile.foodCount > 1 && tile.ants.Count > 0)
+                Console.BackgroundColor = ConsoleColor.Red;
+            else if (tile.State == TileState.Dirt)
+                Console.BackgroundColor = ConsoleColor.DarkYellow;
+            else if (tile.State == TileState.Air)
+                Console.BackgroundColor = ConsoleColor.Blue;
+            else
+                Console.BackgroundColor = ConsoleColor.Yellow;
+
+            if (tile.ants.Count > 0)
+            {
+                drawChar = tile.ants[0].Symbol;
+            }
+            else if (tile.foodCount > 0)
+            {
+                drawChar = '@';
+                Console.ForegroundColor = ConsoleColor.Red;
             }
 
-            Console.WriteLine();
+            Console.Write(drawChar);
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.BackgroundColor = ConsoleColor.Black;
         }
     }
 }

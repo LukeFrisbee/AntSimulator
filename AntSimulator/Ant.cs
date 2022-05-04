@@ -6,15 +6,19 @@ namespace AntSimulator
         protected List<Tile> foods;
         protected List<Ant> ants;
         protected Tile? target;
+        protected HashSet<Tile> updatedTiles = new HashSet<Tile>();
 
         protected int x;
         protected int y;
 
         public int Life { get => life; set => life = value; }
-        protected int life = 10000;
-        protected int foodWorth = 10;
+        protected int life = 100;
+        protected int foodWorth = 5;
 
-        public virtual char Symbol { get; } = 'A';
+        public char Symbol { get; protected set; } = 'A';
+
+        private Stack<Direction> backTrack = new Stack<Direction>();
+        private bool[,] pheromoneTrail;
 
         public Ant(int x, int y, Grid grid, List<Tile> foods, List<Ant> ants)
         {
@@ -26,20 +30,22 @@ namespace AntSimulator
             this.ants = ants;
 
             grid.grid[y, x].ants.Add(this);
+            updatedTiles.Add(grid.grid[y, x]);
+
+            pheromoneTrail = new bool[grid.Height, grid.Width];
         }
 
-        public virtual void Act()
+        public virtual HashSet<Tile> Act()
         {
+            updatedTiles.Clear();
+
             if (target == null)
                 PickTarget();
 
-            //if (!grid.grid[y, x].isDirt && !grid.grid[y, x].isAir)
-                //grid.grid[y - 1, x].isAir = true;
-
-            MoveToTarget();
-
             life--;
             if (life <= 0) Die();
+
+            return updatedTiles;
         }
 
         protected void Die()
@@ -47,8 +53,14 @@ namespace AntSimulator
             if (target != null)
                 foods.Add(target);
 
-            grid.grid[y, x].ants.Remove(this);
-            ants.Remove(this);
+            if (life <= -30)
+            {
+                grid.grid[y, x].ants.Remove(this);
+                ants.Remove(this);
+            }
+
+            Symbol = 'X';
+            updatedTiles.Add(grid.grid[y, x]);
         }
 
         protected virtual void MoveToTarget()
@@ -59,38 +71,22 @@ namespace AntSimulator
             int x_diff = x - target.x;
             int y_diff = y - target.y;
 
-            Tile up = grid.grid[y - 1, x];
-            Tile down = grid.grid[y + 1, x];
-            Tile left = grid.grid[y, x - 1];
-            Tile right = grid.grid[y, x + 1];
+            TileState up = grid.grid[y - 1, x].State;
+            TileState down = grid.grid[y + 1, x].State;
+            TileState left = grid.grid[y, x - 1].State;
+            TileState right = grid.grid[y, x + 1].State;
 
             //if (x_diff == 0 && y_diff == 0) EatFood();
-            if (y_diff > 0 && !up.isWall) Move(Direction.Up);
-            else if (y_diff < 0 && !down.isWall) Move(Direction.Down);
-            else if (x_diff > 0 && !left.isWall) Move(Direction.Left);
-            else if (x_diff < 0 && !right.isWall) Move(Direction.Right);
+            if (y_diff > 0 && down != TileState.Wall) Move(Direction.Up);
+            else if (y_diff < 0 && down != TileState.Wall) Move(Direction.Down);
+            else if (x_diff > 0 && left != TileState.Wall) Move(Direction.Left);
+            else if (x_diff < 0 && right != TileState.Wall) Move(Direction.Right);
             else EatFood();
         }
-
-        protected void EatFood()
-        {
-            if (target == null)
-                return;
-
-            if (target.foodCount > 0)
-            {
-                target.foodCount -= 1;
-                life += foodWorth;
-            }
-            else
-            {
-                target = null;
-            }
-        }
-
         protected void Move(Direction direction)
         {
             grid.grid[y, x].ants.Remove(this);
+            updatedTiles.Add(grid.grid[y, x]);
 
             switch (direction)
             {
@@ -108,17 +104,139 @@ namespace AntSimulator
                     break;
             }
 
-            if (x < 0 || x >= grid.Width || y < 0 || y >= grid.Height)
+            grid.grid[y, x].ants.Add(this);
+            updatedTiles.Add(grid.grid[y, x]);
+        }
+
+        protected void EatFood()
+        {
+            if (target == null)
                 return;
 
+            // Eating Food
+            if (target.foodCount > 0)
+            {
+                target.foodCount -= 1;
+                life += foodWorth;
+                return;
+            }
+
+            // Out Of Food
+            updatedTiles.Add(grid.grid[y, x]);
+            target = null;
+        }
+        protected void PathToTarget()
+        {
+            if (target == null)
+                return;
+
+            int x_diff = x - target.x;
+            int y_diff = y - target.y;
+
+            pheromoneTrail[y, x] = true;
+
+            // Eat Food
+            if (x_diff == 0 && y_diff == 0)
+            {
+                EatFood();
+                pheromoneTrail = new bool[grid.Height, grid.Width];
+                backTrack.Clear();
+                return;
+            }
+
+            // Path to Food
+            if (y_diff < 0) // Try Down
+            {
+                if (TryPath(Direction.Down)) return;
+                if (x_diff > 0)
+                {
+                    if (TryPath(Direction.Left)) return;
+                    if (TryPath(Direction.Right)) return;
+                }
+                if (TryPath(Direction.Right)) return;
+                if (TryPath(Direction.Left)) return;
+                if (TryPath(Direction.Up)) return;
+            }
+            else if (y_diff > 0) // Try Up
+            {
+                if (TryPath(Direction.Up)) return;
+                if (x_diff > 0)
+                {
+                    if (TryPath(Direction.Left)) return;
+                    if (TryPath(Direction.Right)) return;
+                }
+                if (TryPath(Direction.Right)) return;
+                if (TryPath(Direction.Left)) return;
+                if (TryPath(Direction.Down)) return;
+            }
+            else // Try Horizontal
+            {
+                if (x_diff > 0)
+                {
+                    if (TryPath(Direction.Left)) return;
+                    if (TryPath(Direction.Right)) return;
+                }
+                if (TryPath(Direction.Right)) return;
+                if (TryPath(Direction.Left)) return;
+                if (TryPath(Direction.Up)) return;
+                if (TryPath(Direction.Down)) return;
+            }
+
+
+            if (backTrack.Count > 0) Move(backTrack.Pop());
+        }
+
+        protected bool TryPath(Direction direction)
+        {
+            grid.grid[y, x].ants.Remove(this);
+            updatedTiles.Add(grid.grid[y, x]);
+
+            switch (direction)
+            {
+                case Direction.Up:
+                    TileState up = grid.grid[y - 1, x].State;
+                    if (up != TileState.Normal || pheromoneTrail[y - 1, x]) return false;
+
+                    y--;
+                    backTrack.Push(Direction.Down);
+                    break;
+
+                case Direction.Down:
+                    TileState down = grid.grid[y + 1, x].State;
+                    if ((down != TileState.Normal && down != TileState.Air) || pheromoneTrail[y + 1, x]) return false;
+
+                    y++;
+                    backTrack.Push(Direction.Up);
+                    break;
+
+                case Direction.Left:
+                    TileState left = grid.grid[y, x - 1].State;
+                    if (left != TileState.Normal || pheromoneTrail[y, x - 1]) return false;
+
+                    x--;
+                    backTrack.Push(Direction.Right);
+                    break;
+
+                case Direction.Right:
+                    TileState right = grid.grid[y, x + 1].State;
+                    if (right != TileState.Normal || pheromoneTrail[y, x + 1]) return false;
+
+                    x++;
+                    backTrack.Push(Direction.Left);
+                    break;
+            }
+
             grid.grid[y, x].ants.Add(this);
+            updatedTiles.Add(grid.grid[y, x]);
+
+            return true;
         }
 
         protected virtual void PickTarget()
         {
             foreach (Tile food in foods)
             {
-                if (!food.isAir && !food.isDirt)
+                if (food.State == TileState.Normal)
                 {
                     target = food;
                     foods.Remove(food);

@@ -17,11 +17,17 @@ namespace AntSimulator
         public int x;
         public int y;
 
-        public bool isDirt;
-        public bool isAir;
-        public bool isWall;
+        public TileState State = TileState.Normal;
 
         public List<Ant> ants = new List<Ant>();
         public int foodCount = 0;
+    }
+
+    public enum TileState
+    {
+        Normal,
+        Wall,
+        Dirt,
+        Air
     }
 }
