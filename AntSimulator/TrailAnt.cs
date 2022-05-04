@@ -15,18 +15,5 @@
             PathToTarget();
             return updatedTiles;
         }
-
-        protected override void PickTarget()
-        {
-            foreach (Tile food in foods)
-            {
-                if (food.State == TileState.Normal)
-                {
-                    target = food;
-                    foods.Remove(food);
-                    return;
-                }
-            }
-        }
     }
 }

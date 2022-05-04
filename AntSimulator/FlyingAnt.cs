@@ -12,21 +12,20 @@
             base.Act();
             if (life <= 0) return updatedTiles;
 
-            MoveToTarget();
+            if (target == null)
+                return updatedTiles;
+            else if (target.State == TileState.Dirt)
+                MoveToTarget();
+            else
+                PathToTarget();
+
             return updatedTiles;
         }
 
         protected override void PickTarget()
         {
-            foreach (Tile food in foods)
-            {
-                if (food.State == TileState.Air)
-                {
-                    target = food;
-                    foods.Remove(food);
-                    return;
-                }
-            }
+            target = FindFood(TileState.Air);
+            if (target == null) target = FindFood(TileState.Normal);
         }
     }
 }
