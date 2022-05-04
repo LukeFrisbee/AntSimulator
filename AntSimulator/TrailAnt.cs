@@ -26,46 +26,49 @@
             int x_diff = x - target.x;
             int y_diff = y - target.y;
 
-            if (y_diff > 0) Move(Direction.Up);
-            else if (y_diff < 0) Move(Direction.Down);
-            else if (x_diff > 0) Move(Direction.Left);
-            else if (x_diff < 0) Move(Direction.Right);
-            else EatFood();
-
-            Direction direction = Direction.Up;
-            Direction trail = Direction.Down;
+            Direction direction;
+            Direction trail;
 
             pheromoneTrail[y, x] = true;
+
+            Tile up = grid.grid[y - 1, x];
+            Tile down = grid.grid[y + 1, x];
+            Tile left = grid.grid[y, x - 1];
+            Tile right = grid.grid[y, x + 1];
 
             if (x_diff == 0 && y_diff == 0)
             {
                 EatFood();
                 return;
             }
-            else if (y_diff > 0 && !grid.grid[y - 1, x].isDirt)
+            else if (!up.isWall && !up.isDirt && !up.isAir && !pheromoneTrail[y - 1, x])
             {
                 direction = Direction.Up;
                 trail = Direction.Down;
             }
-            else if (y_diff < 0 && !grid.grid[y + 1, x].isDirt)
+            else if (!down.isWall && !down.isDirt && !pheromoneTrail[y + 1, x])
             {
                 direction = Direction.Down;
                 trail = Direction.Up;
             }
-            else if (x_diff > 0 && !grid.grid[y, x - 1].isDirt)
+            else if (!left.isWall && !left.isDirt && !left.isAir && !pheromoneTrail[y, x - 1])
             {
                 direction = Direction.Left;
                 trail = Direction.Right;
             }
-            else if (x_diff < 0 && !grid.grid[y, x + 1].isDirt)
+            else if (!right.isWall && !right.isDirt && !right.isAir && !pheromoneTrail[y, x + 1])
             {
                 direction = Direction.Right;
                 trail = Direction.Left;
             }
             else
             {
-                direction = backTrack.Pop();
-                Move(direction);
+                if (backTrack.Count > 0)
+                {
+                    direction = backTrack.Pop();
+                    Move(direction);
+                }
+                return;
             }
 
             Move(direction);
@@ -77,7 +80,7 @@
         {
             foreach (Tile food in foods)
             {
-                if (!food.isAir && food.isDirt)
+                if (!food.isAir && !food.isDirt)
                 {
                     target = food;
                     foods.Remove(food);

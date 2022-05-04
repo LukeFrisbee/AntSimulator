@@ -9,10 +9,10 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
             Grid grid = new Grid();
 
             int tickCount = 1000;
-            int delay = 250;
+            int delay = 100;
 
             grid.Draw();
-            Thread.Sleep(2000);
+            Thread.Sleep(1000);
 
             List<Tile> foods = new List<Tile>();
             grid.grid[10, 30].foodCount = 5;
@@ -26,16 +26,18 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
             foods.Add(grid.grid[13, 5]);
 
             grid.Draw();
-            Thread.Sleep(2000);
+            Thread.Sleep(1000);
 
             List<Ant> ants = new List<Ant>();
             Ant andy = new Ant(10, 5, grid, foods, ants);
             FlyingAnt flik = new FlyingAnt(10, 5, grid, foods, ants);
             DiggingAnt doug = new DiggingAnt(35, 10, grid, foods, ants);
+            TrailAnt timmy = new TrailAnt(10, 5, grid, foods, ants);
 
-            ants.Add(andy);
-            ants.Add(flik);
+            //ants.Add(andy);
+            //ants.Add(flik);
             ants.Add(doug);
+            ants.Add(timmy);
 
             while(tickCount > 0)
             {

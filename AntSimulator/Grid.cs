@@ -34,6 +34,9 @@ namespace AntSimulator
                         tile.isAir = true;
                     else if (y > height/2)
                         tile.isDirt = true;
+
+                    if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
+                        tile.isWall = true;
                     
                     grid[y, x] = tile;
                 }
@@ -45,29 +48,34 @@ namespace AntSimulator
             Console.CursorVisible = false;
             Console.SetCursorPosition(0, 0);
 
-            string horizontalBar = new('─', width);
-            string top = '┌' + horizontalBar + '┐';
+            //string horizontalBar = new('─', width);
+            //string top = '┌' + horizontalBar + '┐';
 
-            Console.WriteLine(top);
+            //Console.WriteLine(top);
 
             for (int y = 0; y < height; y++)
             {
-                Console.Write('│');
+                //Console.Write('│');
                 for (int x = 0; x < width; x++)
                 {
+                    Console.BackgroundColor = ConsoleColor.Black;
                     Tile tile = grid[y, x];
                     Char drawChar = ' ';
 
-                    if (tile.ants.Count > 0)
+                    if (tile.isWall)
+                        Console.BackgroundColor = ConsoleColor.Gray;
+                    else if (tile.ants.Count > 0)
                         drawChar = tile.ants[0].Symbol;
                     else if (tile.foodCount > 0 && tile.foodCount < 10)
                         drawChar = tile.foodCount.ToString()[0];
                     else if (tile.isDirt)
-                        drawChar = '█';
+                        Console.BackgroundColor = ConsoleColor.DarkYellow;
 
                     Console.Write(drawChar);
+                    Console.BackgroundColor = ConsoleColor.Black;
                 }
-                Console.WriteLine('│');
+                Console.WriteLine();
+                //Console.WriteLine('│');
             }
 
             Console.WriteLine();

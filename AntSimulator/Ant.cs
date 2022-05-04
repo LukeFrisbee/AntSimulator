@@ -11,7 +11,7 @@ namespace AntSimulator
         protected int y;
 
         public int Life { get => life; set => life = value; }
-        protected int life = 50;
+        protected int life = 10000;
         protected int foodWorth = 10;
 
         public virtual char Symbol { get; } = 'A';
@@ -56,11 +56,16 @@ namespace AntSimulator
             int x_diff = x - target.x;
             int y_diff = y - target.y;
 
-            if (y_diff > 0) Move(Direction.Up);
-            else if (y_diff < 0) Move(Direction.Down);
-            else if (x_diff > 0) Move(Direction.Left);
-            else if (x_diff < 0) Move(Direction.Right);
-            else EatFood();
+            Tile up = grid.grid[y - 1, x];
+            Tile down = grid.grid[y + 1, x];
+            Tile left = grid.grid[y, x - 1];
+            Tile right = grid.grid[y, x + 1];
+
+            if (x_diff == 0 && y_diff == 0) EatFood();
+            else if (y_diff > 0 && !up.isWall) Move(Direction.Up);
+            else if (y_diff < 0 && !down.isWall) Move(Direction.Down);
+            else if (x_diff > 0 && !left.isWall) Move(Direction.Left);
+            else if (x_diff < 0 && !right.isWall) Move(Direction.Right);
         }
 
         protected void EatFood()
