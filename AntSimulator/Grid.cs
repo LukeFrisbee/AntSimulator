@@ -64,12 +64,13 @@ namespace AntSimulator
 
                     if (tile.isWall)
                         Console.BackgroundColor = ConsoleColor.Gray;
-                    else if (tile.ants.Count > 0)
+                    else if (tile.isDirt)
+                        Console.BackgroundColor = ConsoleColor.DarkYellow;
+
+                    if (tile.ants.Count > 0)
                         drawChar = tile.ants[0].Symbol;
                     else if (tile.foodCount > 0 && tile.foodCount < 10)
                         drawChar = tile.foodCount.ToString()[0];
-                    else if (tile.isDirt)
-                        Console.BackgroundColor = ConsoleColor.DarkYellow;
 
                     Console.Write(drawChar);
                     Console.BackgroundColor = ConsoleColor.Black;
