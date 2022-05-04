@@ -4,7 +4,7 @@
     {
         public TrailAnt(int x, int y, Grid grid, List<Tile> foods, List<Ant> ants) : base(x, y, grid, foods, ants) 
         {
-            Symbol = 'T';
+            Symbol = 'A';
         }
 
         public override HashSet<Tile> Act()

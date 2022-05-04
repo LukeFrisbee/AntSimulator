@@ -16,7 +16,7 @@ namespace AntSimulator
         int width;
         int height;
 
-        public Grid(int width = 50, int height = 20)
+        public Grid(int width = 80, int height = 30)
         {
             this.width = width;
             this.height = height;

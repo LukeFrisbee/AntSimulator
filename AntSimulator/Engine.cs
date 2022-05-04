@@ -27,7 +27,6 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
             //random x and y values within the border, will be one less than the sides of the screen
             int randomX = randy.Next(1, grid.Width-1);
             int randomY = randy.Next(1, grid.Height-1);
-            int randomFoodCount = randy.Next(0, 10);
 
             Tile food = grid.grid[randomY, randomX];
             food.foodCount = foodCount;
@@ -64,9 +63,9 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
             Random randy = new Random();
             grid.DrawGrid();
 
-            TrailAnt timmy = new TrailAnt(10, 5, grid, foods, ants);
-            FlyingAnt flik = new FlyingAnt(10, 5, grid, foods, ants);
-            DiggingAnt doug = new DiggingAnt(35, 10, grid, foods, ants);
+            TrailAnt timmy = new TrailAnt(10, grid.Height/2, grid, foods, ants);
+            FlyingAnt flik = new FlyingAnt(2, grid.Height/2, grid, foods, ants);
+            DiggingAnt doug = new DiggingAnt(35, grid.Height/2, grid, foods, ants);
 
             ants.Add(timmy);
             ants.Add(flik);

@@ -12,7 +12,7 @@ namespace AntSimulator
         protected int y;
 
         public int Life { get => life; set => life = value; }
-        protected int life = 100;
+        protected int life = 300;
         protected int foodWorth = 10;
 
         public char Symbol { get; protected set; } = 'A';
@@ -77,7 +77,7 @@ namespace AntSimulator
             TileState right = grid.grid[y, x + 1].State;
 
             //if (x_diff == 0 && y_diff == 0) EatFood();
-            if (y_diff > 0 && down != TileState.Wall) Move(Direction.Up);
+            if (y_diff > 0 && up != TileState.Wall) Move(Direction.Up);
             else if (y_diff < 0 && down != TileState.Wall) Move(Direction.Down);
             else if (x_diff > 0 && left != TileState.Wall) Move(Direction.Left);
             else if (x_diff < 0 && right != TileState.Wall) Move(Direction.Right);
@@ -195,7 +195,7 @@ namespace AntSimulator
             {
                 case Direction.Up:
                     TileState up = grid.grid[y - 1, x].State;
-                    if (up != TileState.Normal || pheromoneTrail[y - 1, x]) return false;
+                    if (up == TileState.Dirt || up == TileState.Wall || pheromoneTrail[y - 1, x]) return false;
 
                     y--;
                     backTrack.Push(Direction.Down);
@@ -203,7 +203,7 @@ namespace AntSimulator
 
                 case Direction.Down:
                     TileState down = grid.grid[y + 1, x].State;
-                    if ((down != TileState.Normal && down != TileState.Air) || pheromoneTrail[y + 1, x]) return false;
+                    if (down == TileState.Dirt || down == TileState.Wall || pheromoneTrail[y + 1, x]) return false;
 
                     y++;
                     backTrack.Push(Direction.Up);
@@ -211,7 +211,7 @@ namespace AntSimulator
 
                 case Direction.Left:
                     TileState left = grid.grid[y, x - 1].State;
-                    if (left != TileState.Normal || pheromoneTrail[y, x - 1]) return false;
+                    if (left == TileState.Dirt || left == TileState.Wall || pheromoneTrail[y, x - 1]) return false;
 
                     x--;
                     backTrack.Push(Direction.Right);
@@ -219,7 +219,7 @@ namespace AntSimulator
 
                 case Direction.Right:
                     TileState right = grid.grid[y, x + 1].State;
-                    if (right != TileState.Normal || pheromoneTrail[y, x + 1]) return false;
+                    if (right == TileState.Dirt || right == TileState.Wall || pheromoneTrail[y, x + 1]) return false;
 
                     x++;
                     backTrack.Push(Direction.Left);
