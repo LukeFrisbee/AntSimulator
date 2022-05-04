@@ -234,15 +234,21 @@ namespace AntSimulator
 
         protected virtual void PickTarget()
         {
+            target = FindFood(TileState.Normal);
+        }
+
+        protected Tile? FindFood(TileState state = TileState.Normal)
+        {
             foreach (Tile food in foods)
             {
-                if (food.State == TileState.Normal)
+                if (food.State == state)
                 {
                     target = food;
                     foods.Remove(food);
-                    return;
+                    return food;
                 }
             }
+            return null;
         }
     }
 }
