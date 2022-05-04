@@ -4,10 +4,7 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
 {
     public class Engine
     {
-
         private Grid grid = new Grid();
-        private List<Tile> foods = new List<Tile>();
-        private List<Ant> ants = new List<Ant>();
 
         private int tickCount;
         private int delay;
@@ -34,7 +31,7 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
 
                 Tile food = grid.grid[randomY, randomX];
                 food.foodCount = foodCount;
-                foods.Add(food);
+                grid.foods.Add(food);
                 return food;
             }
             //Remainder percentage should be on dirt
@@ -45,7 +42,7 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
 
                 Tile food = grid.grid[randomY, randomX];
                 food.foodCount = foodCount;
-                foods.Add(food);
+                grid.foods.Add(food);
                 return food;
             }
 
@@ -58,15 +55,11 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
             Random randy = new Random();
             grid.DrawGrid();
 
-            TrailAnt timmy = new TrailAnt(10, grid.Height/2, grid, foods, ants);
-            FlyingAnt flik = new FlyingAnt(2, grid.Height/2, grid, foods, ants);
-            DiggingAnt doug = new DiggingAnt(35, grid.Height/2, grid, foods, ants);
-            QueenAnt qua = new QueenAnt(grid.Width-2, grid.Height-2, grid, foods, ants);
-
-            ants.Add(timmy);
-            ants.Add(flik);
-            ants.Add(doug);
-            ants.Add(qua);
+            QueenAnt qua = new QueenAnt(1, grid.Height/2, grid);
+            TrailAnt timmy = new TrailAnt(10, grid.Height/2, grid, qua);
+            FlyingAnt flik = new FlyingAnt(2, grid.Height/2, grid, qua);
+            DiggingAnt doug = new DiggingAnt(35, grid.Height/2, grid, qua);
+            
 
             grid.DrawGrid();
             Thread.Sleep(2000);
@@ -85,8 +78,8 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
                     }
                 }
 
-                for (int i = 0; i < ants.Count; i++)
-                    tiles.UnionWith(ants[i].Act());
+                for (int i = 0; i < grid.ants.Count; i++)
+                    tiles.UnionWith(grid.ants[i].Act());
                 grid.DrawTiles(tiles);
 
                 Thread.Sleep(delay);

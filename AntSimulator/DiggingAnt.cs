@@ -2,7 +2,7 @@
 {
     public class DiggingAnt : Ant
     {
-        public DiggingAnt(int x, int y, Grid grid, List<Tile> foods, List<Ant> ants) : base(x, y, grid, foods, ants) 
+        public DiggingAnt(int x, int y, Grid grid, QueenAnt? queen) : base(x, y, grid, queen) 
         {
             Symbol = 'D';
         }
@@ -13,7 +13,7 @@
                 grid.grid[y, x].State = TileState.Normal;
 
             base.Act();
-            if (life <= 0) return updatedTiles;
+            if (food <= 0 || feedQueen) return updatedTiles;
 
             if (target == null)
                 return updatedTiles;

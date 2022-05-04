@@ -9,6 +9,8 @@ namespace AntSimulator
     public class Grid
     {
         public Tile[,] grid;
+        public List<Tile> foods = new List<Tile>();
+        public List<Ant> ants = new List<Ant>();
 
         public int Width { get => width; }
         public int Height { get => height; }

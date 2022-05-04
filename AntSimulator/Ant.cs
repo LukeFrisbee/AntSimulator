@@ -3,33 +3,37 @@ namespace AntSimulator
     public class Ant
     {
         protected Grid grid;
-        protected List<Tile> foods;
-        protected List<Ant> ants;
         protected Tile? target;
         protected HashSet<Tile> updatedTiles = new HashSet<Tile>();
 
         protected int x;
         protected int y;
 
-        public int Life { get => life; set => life = value; }
-        protected int life = 300;
+        public int Food { get => food; set => food = value; }
+
+        protected int maxFood = 400;
+        protected int food = 200;
         protected int foodWorth = 10;
+
+        protected QueenAnt? queen;
+        protected bool feedQueen;
 
         public char Symbol { get; protected set; } = 'A';
 
         private Stack<Direction> backTrack = new Stack<Direction>();
         private bool[,] pheromoneTrail;
 
-        public Ant(int x, int y, Grid grid, List<Tile> foods, List<Ant> ants)
+        public Ant(int x, int y, Grid grid, QueenAnt? queen)
         {
             this.x = x;
             this.y = y;
 
             this.grid = grid;
-            this.foods = foods;
-            this.ants = ants;
+            this.queen = queen;
 
+            grid.ants.Add(this);
             grid.grid[y, x].ants.Add(this);
+
             updatedTiles.Add(grid.grid[y, x]);
 
             pheromoneTrail = new bool[grid.Height, grid.Width];
@@ -39,11 +43,27 @@ namespace AntSimulator
         {
             updatedTiles.Clear();
 
-            if (target == null)
-                PickTarget();
+            food--;
+            if (food <= 0)
+                Die();
+            else if (food >= maxFood)
+            {
+                pheromoneTrail = new bool[grid.Height, grid.Width];
+                backTrack.Clear();
+                feedQueen = true;
+            }
 
-            life--;
-            if (life <= 0) Die();
+            if (feedQueen && queen != null)
+            {
+                if (target != null)
+                    grid.foods.Add(target);
+                target = grid.grid[queen.y, queen.x];
+                PathToTarget();
+            }
+            else if (target == null)
+            {
+                PickTarget();
+            }
 
             return updatedTiles;
         }
@@ -51,12 +71,11 @@ namespace AntSimulator
         protected void Die()
         {
             if (target != null)
-                foods.Add(target);
+                grid.foods.Add(target);
 
-            if (life <= -30)
+            if (food <= -30)
             {
-                grid.grid[y, x].ants.Remove(this);
-                ants.Remove(this);
+                grid.ants.Remove(this);
             }
 
             Symbol = 'X';
@@ -64,6 +83,7 @@ namespace AntSimulator
         }
 
         protected virtual void MoveToTarget()
+
         {
             if (target == null)
                 return;
@@ -83,6 +103,7 @@ namespace AntSimulator
             else if (x_diff < 0 && right != TileState.Wall) Move(Direction.Right);
             else EatFood();
         }
+        
         protected void Move(Direction direction)
         {
             grid.grid[y, x].ants.Remove(this);
@@ -108,6 +129,27 @@ namespace AntSimulator
             updatedTiles.Add(grid.grid[y, x]);
         }
 
+        protected void GiveFood()
+        {
+            if (!feedQueen || queen == null)
+            {
+                feedQueen = false;
+                return;
+            }
+
+            if (food >= maxFood/2)
+            {
+                queen.Food += 10;
+                Food -= 10;
+                return;
+            }
+
+            // Out Of Food
+            updatedTiles.Add(grid.grid[y, x]);
+            feedQueen = false;
+            target = null;
+        }
+
         protected void EatFood()
         {
             if (target == null)
@@ -117,7 +159,7 @@ namespace AntSimulator
             if (target.foodCount > 0)
             {
                 target.foodCount -= 1;
-                life += foodWorth;
+                food += foodWorth;
                 return;
             }
 
@@ -125,6 +167,7 @@ namespace AntSimulator
             updatedTiles.Add(grid.grid[y, x]);
             target = null;
         }
+        
         protected void PathToTarget()
         {
             if (target == null)
@@ -138,12 +181,14 @@ namespace AntSimulator
             // Eat Food
             if (x_diff == 0 && y_diff == 0)
             {
-                EatFood();
+                if (feedQueen)
+                    GiveFood();
+                else
+                    EatFood();
                 pheromoneTrail = new bool[grid.Height, grid.Width];
                 backTrack.Clear();
                 return;
             }
-
             // Path to Food
             if (y_diff < 0) // Try Down
             {
@@ -239,12 +284,12 @@ namespace AntSimulator
 
         protected Tile? FindFood(TileState state = TileState.Normal)
         {
-            foreach (Tile food in foods)
+            foreach (Tile food in grid.foods)
             {
                 if (food.State == state)
                 {
                     target = food;
-                    foods.Remove(food);
+                    grid.foods.Remove(food);
                     return food;
                 }
             }
