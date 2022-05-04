@@ -55,21 +55,37 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
 
         public void RunSimulation()
         {
-            Random randy = new Random(); 
+            Random randy = new Random();
+            grid.Draw();
+
+            TrailAnt timmy = new TrailAnt(10, 5, grid, foods, ants);
+            FlyingAnt flik = new FlyingAnt(10, 5, grid, foods, ants);
+            DiggingAnt doug = new DiggingAnt(35, 10, grid, foods, ants);
+
+            for (int i = 0; i < randy.Next(2, 5); i++)
+            {
+                int randX = randy.Next(1, grid.Width-2); 
+                int randY = randy.Next(grid.Height/2, grid.Height+1); 
+                grid.grid[randY,randX].foodCount = randy.Next(0,10);
+                foods.Add(grid.grid[randY, randX]);
+            }
+            Thread.Sleep(2000);
             grid.Draw();
             Thread.Sleep(2000);
 
-            for (int i = 0; i < randy.Next(2,5); i++){
-                GenerateFood();
-                GenerateAnt();
-            }
-            grid.Draw();
-            Thread.Sleep(2000);
+
 
             while (tickCount > 0)
             {
                 grid.Draw();
+                if (tickCount % 25 == 0){
 
+
+                    for (int i = 0; i < randy.Next(2, 5); i++)
+                    {
+                        GenerateFood();
+                    }
+                }
                 for (int i = 0; i < ants.Count; i++)
                     ants[i].Act();
 
