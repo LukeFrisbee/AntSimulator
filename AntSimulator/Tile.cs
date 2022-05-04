@@ -11,8 +11,10 @@ namespace AntSimulator
         public int x;
         public int y;
 
-        public bool dirt;
-        public bool air;
+        public bool isDirt;
+        public bool isAir;
+        public bool isTargeted;
+
 
         public int foodCount = 0;
 
