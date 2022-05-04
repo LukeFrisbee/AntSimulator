@@ -41,7 +41,7 @@
             if (life <= 0) return updatedTiles;
 
 
-            // MoveToTarget();
+            MoveToTarget();
             if (spawnerCooldown == 0 && this.Life >= 25)
             {
                 GenerateAnt();
