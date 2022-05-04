@@ -2,13 +2,8 @@ namespace AntSimulator
 {
     abstract class AbstractAnt
     {
-        public abstract void Act(Tile currentTile);
+        public abstract void Act(Tile tile, int x, int y);
     }
 
-    interface IMoveSelector
-    {
-        int LocateNearestFoodTile(int[][] coordinates);
-        int[] NextAvailableMoves(Tile currentTile);
-    }
 }
 
