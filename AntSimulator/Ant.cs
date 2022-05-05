@@ -11,9 +11,10 @@ namespace AntSimulator
 
         public int Food { get => food; set => food = value; }
 
-        protected int maxFood = 400;
-        protected int food = 200;
+        protected int maxFood = 700;
+        protected int food = 500;
         protected int foodWorth = 10;
+        protected int foodLoss = 1;
 
         protected QueenAnt? queen;
         protected bool feedQueen;
@@ -43,10 +44,10 @@ namespace AntSimulator
         {
             updatedTiles.Clear();
 
-            food--;
+            food -= foodLoss;
             if (food <= 0)
                 Die();
-            else if (food >= maxFood)
+            else if (!feedQueen && food >= maxFood)
             {
                 pheromoneTrail = new bool[grid.Height, grid.Width];
                 backTrack.Clear();
@@ -73,7 +74,7 @@ namespace AntSimulator
             if (target != null)
                 grid.foods.Add(target);
 
-            if (food <= -30)
+            if (food <= foodLoss * -30)
             {
                 grid.ants.Remove(this);
             }
@@ -132,22 +133,19 @@ namespace AntSimulator
         protected void GiveFood()
         {
             if (!feedQueen || queen == null)
-            {
-                feedQueen = false;
                 return;
-            }
 
             if (food >= maxFood/2)
             {
-                queen.Food += 10;
-                Food -= 10;
+                queen.Food += foodWorth;
+                Food -= foodWorth;
                 return;
             }
 
             // Out Of Food
             updatedTiles.Add(grid.grid[y, x]);
-            feedQueen = false;
             target = null;
+            feedQueen = false;
         }
 
         protected void EatFood()
@@ -227,8 +225,10 @@ namespace AntSimulator
                 if (TryPath(Direction.Down)) return;
             }
 
-
-            if (backTrack.Count > 0) Move(backTrack.Pop());
+            if (backTrack.Count > 0) 
+                Move(backTrack.Pop());
+            else 
+                pheromoneTrail = new bool[grid.Height, grid.Width];
         }
 
         protected bool TryPath(Direction direction)
@@ -240,6 +240,7 @@ namespace AntSimulator
             {
                 case Direction.Up:
                     TileState up = grid.grid[y - 1, x].State;
+                    if ((feedQueen || this is not FlyingAnt) && up == TileState.Air) return false;
                     if (up == TileState.Dirt || up == TileState.Wall || pheromoneTrail[y - 1, x]) return false;
 
                     y--;
