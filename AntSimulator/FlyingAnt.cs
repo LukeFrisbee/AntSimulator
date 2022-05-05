@@ -14,7 +14,7 @@
 
             if (target == null)
                 return updatedTiles;
-            if (grid.grid[y, x].State == TileState.Air)
+            if (grid.grid[y, x].State == TileState.Air && target.State == TileState.Air)
                 MoveToTarget();
             else
                 PathToTarget();
