@@ -2,7 +2,7 @@
 {
     public class QueenAnt : Ant
     {
-        private int antCost = 300;
+        private int antCost = 700;
         private Tile home;
         private int moveDelay = 10;
         private int moveTimer;

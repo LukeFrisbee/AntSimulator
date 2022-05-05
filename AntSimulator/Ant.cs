@@ -12,7 +12,7 @@ namespace AntSimulator
         public int Food { get => food; set => food = value; }
 
         protected int maxFood = 700;
-        protected int food = 200;
+        protected int food = 500;
         protected int foodWorth = 10;
         protected int foodLoss = 1;
 
