@@ -9,7 +9,7 @@ namespace AntSimulator // Note: actual namespace depends on the project name.
         private int tickCount;
         private int delay;
 
-        public int foodCount = 10;
+        public int foodCount = 20;
 
         public Engine(int tickCount = 1000, int delay = 250)
         {

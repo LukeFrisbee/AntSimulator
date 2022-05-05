@@ -5,6 +5,7 @@
         public DiggingAnt(int x, int y, Grid grid, QueenAnt? queen) : base(x, y, grid, queen) 
         {
             Symbol = 'D';
+            foodLoss = 2;
         }
 
         public override HashSet<Tile> Act()
